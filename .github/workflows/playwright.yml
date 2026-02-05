@@ -19,13 +19,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Download previous report so we can copy its history into allure-results (required for trend widget)
-      - name: Get previous Allure report (for history trend)
-        if: always()
-        run: |
-          mkdir -p gh-pages
-          wget -q -r -l 5 -np -nH --cut-dirs=1 --no-check-certificate -e robots=off -P gh-pages "https://lescobarsingular.github.io/e2e-test/" 2>/dev/null || true
-          wget -q -r -l 2 -np -nH --cut-dirs=1 --no-check-certificate -e robots=off -P gh-pages "https://lescobarsingular.github.io/e2e-test/history/" 2>/dev/null || true
+      # Restore previous report's history from cache (for trend widget; no dependency on wget of live site)
+      - name: Restore previous Allure history (for trend)
+        uses: actions/cache/restore@v4
+        with:
+          path: previous-report
+          key: allure-report-history
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -71,14 +70,14 @@ jobs:
         if: always()
         run: |
           mkdir -p allure-results
-          if [ -d "gh-pages/history" ]; then cp -r gh-pages/history allure-results/; fi
+          if [ -d "previous-report/history" ]; then cp -r previous-report/history allure-results/; fi
 
       - name: Generate Allure report
         if: always()
         uses: simple-elf/allure-report-action@master
         with:
           allure_results: allure-results
-          gh_pages: gh-pages
+          gh_pages: previous-report
           allure_report: allure-report
           allure_history: allure-history
 
@@ -89,6 +88,14 @@ jobs:
           if [ -z "$(ls -A allure-history 2>/dev/null)" ]; then
             echo '<!DOCTYPE html><html><body><p>Allure report will appear after the next run.</p></body></html>' > allure-history/index.html
           fi
+
+      # Save report for next run's trend (cache key is fixed so next run restores this)
+      - name: Cache Allure report (for next run's trend)
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: allure-history
+          key: allure-report-history
 
       - name: Upload Allure report for Pages
         if: always()
