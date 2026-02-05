@@ -19,12 +19,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Download previous report from live site so simple-elf can merge history (we no longer push to gh-pages)
+      # Download previous report so we can copy its history into allure-results (required for trend widget)
       - name: Get previous Allure report (for history trend)
         if: always()
         run: |
           mkdir -p gh-pages
           wget -q -r -l 5 -np -nH --cut-dirs=1 --no-check-certificate -e robots=off -P gh-pages "https://lescobarsingular.github.io/e2e-test/" 2>/dev/null || true
+          wget -q -r -l 2 -np -nH --cut-dirs=1 --no-check-certificate -e robots=off -P gh-pages "https://lescobarsingular.github.io/e2e-test/history/" 2>/dev/null || true
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -64,6 +65,13 @@ jobs:
           name: allure-results
           path: allure-results/
           retention-days: 14
+
+      # Allure trend needs previous report's history in allure-results (per Allure docs)
+      - name: Copy previous history into allure-results (for trend)
+        if: always()
+        run: |
+          mkdir -p allure-results
+          if [ -d "gh-pages/history" ]; then cp -r gh-pages/history allure-results/; fi
 
       - name: Generate Allure report
         if: always()
