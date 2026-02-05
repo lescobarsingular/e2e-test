@@ -15,6 +15,8 @@ jobs:
   test:
     name: Playwright tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # required to push gh-pages branch
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -74,6 +76,14 @@ jobs:
           gh_pages: gh-pages
           allure_report: allure-report
           allure_history: allure-history
+
+      - name: Ensure allure-history has content (for first deploy)
+        if: always()
+        run: |
+          mkdir -p allure-history
+          if [ -z "$(ls -A allure-history 2>/dev/null)" ]; then
+            echo '<!DOCTYPE html><html><body><p>Allure report will appear after the next run.</p></body></html>' > allure-history/index.html
+          fi
 
       - name: Deploy Allure report to GitHub Pages
         if: always()
