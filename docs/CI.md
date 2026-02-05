@@ -44,10 +44,9 @@ So: **log in once (or when expired) on your machine → save to secret → CI re
 
 5. **Enable GitHub Pages** (for Allure report)
    - Repo → Settings → Pages
-   - Source: Deploy from a branch
-   - Branch: `gh-pages` / root (or `/ (root)`)
+   - Source: **GitHub Actions** (not “Deploy from a branch” — the workflow uses the official deploy-pages action)
 
-After the first run, the workflow will create the `gh-pages` branch with the report. The report URL will be:  
+After the first run, the report will be at:  
 `https://<your-username>.github.io/<repo-name>/`
 
 ### When the session expires
