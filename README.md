@@ -50,10 +50,9 @@ npm run allure:open                   # open report in browser
 ## CI/CD
 
 - **GitHub Actions**: runs on push to `main`/`master`, daily schedule, and manual run.
-- **Allure reports**: published to GitHub Pages (branch `gh-pages`).
+- **Live report**: **Playwright HTML report** is deployed to GitHub Pages (no 404s; links work at `/e2e-test/`).
+- **Artifacts**: Playwright report and Allure results are uploaded so you can download either.
 - **Auth in CI**: set secret `PLAYWRIGHT_AUTH_STATE` (base64 of `auth/user.json`) and variable `AUTH_IN_CI=true`.
-
-See [docs/CI.md](docs/CI.md) for full setup and refresh instructions.
 
 ## Scripts
 
