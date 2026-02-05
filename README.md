@@ -7,10 +7,45 @@ E2E tests for Singular Stories dashboard with Playwright, TypeScript, and Allure
 ```bash
 npm install
 npx playwright install   # one-time: install browsers
-npm run auth:setup        # one-time: log in with Google, saves session to auth/user.json
-npx playwright test       # run tests (headless)
-npx playwright test --headed   # run with browser visible
+npm run auth:setup       # one-time: log in with Google, saves session to auth/user.json
 ```
+
+## Run locally and check it works
+
+```bash
+npx playwright test --project=chromium
+```
+
+With browser visible:
+
+```bash
+npx playwright test --headed --project=chromium
+```
+
+## Allure reports (with history)
+
+Allure report uses your **past runs** as history (trends, previous results). You need **Java 8+** for report generation.
+
+**One command: run tests → generate report → open in browser**
+
+```bash
+npm run test:allure           # headless (chromium + firefox + webkit)
+npm run test:allure:headed     # browser visible (same 3 browsers)
+```
+
+Use `test:allure:headed` for headed — `npm run test:allure --headed` does not pass `--headed` to Playwright.
+
+**Or step by step:**
+
+```bash
+npx playwright test                    # run tests (writes to allure-results/)
+npm run allure:generate               # generate report (keeps history from previous runs)
+npm run allure:open                   # open report in browser
+```
+
+- **History**: Before each generate, the script copies the previous report’s `history` into `allure-results`, then generates with `--clean`. So multiple runs show up as history/trends in the report.
+- **Fresh report**: To start with no history, use `npm run allure:generate:fresh`.
+- **Quick preview**: `npm run allure:serve` generates a temporary report and opens it (no history).
 
 ## CI/CD
 
@@ -26,7 +61,11 @@ See [docs/CI.md](docs/CI.md) for full setup and refresh instructions.
 |--------|-------------|
 | `npm test` | Run tests (headless) |
 | `npm run test:headed` | Run tests with browser visible |
+| `npm run test:allure` | Run tests → generate Allure report → open (with history) |
+| `npm run test:allure:headed` | Same as test:allure but with browser visible |
 | `npm run auth:setup` | Log in with Google and save session for CI/local |
 | `npm run report` | Open last Playwright HTML report |
-| `npm run allure:generate` | Generate Allure report from `allure-results/` (requires Allure CLI) |
-| `npm run allure:open` | Open Allure report (requires Allure CLI) |
+| `npm run allure:generate` | Generate Allure report (copies previous history in, then generates so trends are kept) |
+| `npm run allure:generate:fresh` | Generate Allure report from scratch (no history) |
+| `npm run allure:open` | Open last generated Allure report |
+| `npm run allure:serve` | Generate temporary report and open (no history) |

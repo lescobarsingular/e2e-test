@@ -41,7 +41,7 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
       testIgnore: /auth\.setup\.ts/,
     },
-    // { name: 'firefox', use: { ...devices['Desktop Firefox'] }, testIgnore: /auth\.setup\.ts/ },
-    // { name: 'webkit', use: { ...devices['Desktop Safari'] }, testIgnore: /auth\.setup\.ts/ },
+    { name: 'firefox', use: { ...devices['Desktop Firefox'] }, testIgnore: /auth\.setup\.ts/ },
+    { name: 'webkit', use: { ...devices['Desktop Safari'] }, testIgnore: /auth\.setup\.ts/ },
   ],
 });

@@ -9,9 +9,15 @@ The workflow runs Playwright tests and publishes Allure reports. It can run **ev
 - **Reports**: Allure results → HTML report → GitHub Pages; Playwright report as artifact
 - **Auth**: Uses saved session from secret so tests run logged in (no Google login in CI)
 
-## Making daily runs work: auth in CI
+## How auth works (you don’t log in in CI)
 
-Tests need to be logged in. CI cannot do Google sign-in (captchas, 2FA, blocks). So we reuse the same **saved session** you use locally.
+- **`page.pause()` and auth-setup** are only for **your machine**. You run `npm run auth:setup` once (or when the session expires). The browser opens, you log in with Google, then you click Resume. That saves cookies to `auth/user.json`. CI **never** runs that test and **never** uses `page.pause()`.
+- **In CI**: The workflow takes a **copy** of that session: you put the contents of `auth/user.json` (base64) in a GitHub secret. Before tests run, the workflow writes that back to `auth/user.json` on the runner. So tests start **already logged in** — no Google, no browser login, no pause.
+- **Keeping it working**: When the session expires (e.g. after a few weeks), you run `npm run auth:setup` again **locally**, get a new `auth/user.json`, update the GitHub secret with the new base64. CI then keeps working until the next expiry.
+
+So: **log in once (or when expired) on your machine → save to secret → CI reuses that file.** No logging in inside GitHub Actions.
+
+## Making daily runs work: auth in CI
 
 ### One-time setup
 
