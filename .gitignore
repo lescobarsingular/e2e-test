@@ -8,3 +8,4 @@ playwright/.cache/
 auth/
 allure-results/
 allure-report/
+docs/CI.md

@@ -19,13 +19,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Get Allure history (for report trend)
+      # Download previous report from live site so simple-elf can merge history (we no longer push to gh-pages)
+      - name: Get previous Allure report (for history trend)
         if: always()
-        continue-on-error: true
-        uses: actions/checkout@v4
-        with:
-          ref: gh-pages
-          path: gh-pages
+        run: |
+          mkdir -p gh-pages
+          wget -q -r -l 5 -np -nH --cut-dirs=1 --no-check-certificate -e robots=off -P gh-pages "https://lescobarsingular.github.io/e2e-test/" 2>/dev/null || true
 
       - name: Setup Node
         uses: actions/setup-node@v4
